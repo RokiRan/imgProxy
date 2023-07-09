@@ -3,15 +3,22 @@ import uuid
 
 from flask import Flask, request, jsonify, make_response, send_file
 from flask_cors import CORS, cross_origin
+
 app = Flask(__name__)
 CORS(app)
 UPLOAD_FOLDER = './upload'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 设置最大请求大小为 16MB
 
-@app.route('/upload', methods=['POST'])
+@app.route('/upload', methods=['POST','OPTIONS'])
 @cross_origin()
 def upload_file():
+    response = make_response()
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    if request.method == 'OPTIONS':
+        return response
     if 'file' not in request.files:
         return 'No file uploaded', 400
 
